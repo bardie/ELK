@@ -20,6 +20,7 @@ service:
   logstash:
     image: docker.elastic.co/logstash/logstash:7.3.2
     privileged: true
+    restart: unless-stopped    
     user: root
     mem_limit: 6g
     memswap_limit: 7g
@@ -30,13 +31,14 @@ service:
     environment:
       - LS_JAVA_OPTS=-Xmx8g
     depends_on:
-      - db        
-    volumes:
-      - /u01/logs:/var/log/elk
-    depends_on:
       - elasticsearch       
+    volumes:
+      - /u01/logs:/var/log/elk    
       
   kibana:
-    image: docker.elastic.co/kibana/kibana:7.3.2  
+    image: docker.elastic.co/kibana/kibana:7.3.2
+    restart: unless-stopped    
     depends_on:
       - elasticsearch 
+    environment:
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200   
