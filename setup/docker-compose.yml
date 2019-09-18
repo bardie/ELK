@@ -1,0 +1,35 @@
+version: "2"
+
+service:
+  image: docker.elastic.co/elasticsearch/elasticsearch:7.3.2
+  restart: unless-stopped
+  privileged: true
+  volumes:
+    - /u01/elasticsearch/data:/usr/share/elasticsearch/data
+  environment:
+    - cluster.name=elk
+    - xpack.graph.enabled=false
+    - xpack.ml.enabled=false
+    - xpack.monitoring.enabled=false
+    - xpack.security.enabled=false
+    - xpack.watcher.enabled=false
+  ports:
+    - 9200:9200  
+    
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.3.2
+    privileged: true
+    user: root
+    mem_limit: 6g
+    memswap_limit: 7g
+    mem_reservation: 1g
+    cpu_shares: 73
+    cpu_quota: 50000
+    cpuset: 0,1
+    environment:
+      - LS_JAVA_OPTS=-Xmx8g
+    volumes:
+      - /u01/logs:/var/log/elk
+      
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.3.2  
